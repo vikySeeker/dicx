@@ -1,2 +1,2 @@
 # DICX
-dicx is a simple dictory tool gives you meaning of any selected word.
+dicx is a simple dictionary tool that gives you meaning of any selected word.
