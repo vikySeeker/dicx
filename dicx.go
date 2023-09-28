@@ -1,12 +1,9 @@
 package main
 
 import (
+	a "dicx/api"
 	w "dicx/word"
 	"fmt"
-	"log"
-	"os"
-
-	"github.com/joho/godotenv"
 )
 
 /*
@@ -15,15 +12,10 @@ baic implemetation to test reading api keys from env file
 	and importing packages and calling methods
 */
 func main() {
-	//fmt.Println("Hello World!");
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("some error: %s", err)
+	res, err := w.GetSelectedWord()
+	if err != 0 {
+		fmt.Println("some error occured: " + res)
 	}
-
-	val := os.Getenv("THESKEY")
-	fmt.Println(val)
-	val = os.Getenv("DICTKEY")
-	fmt.Println(val)
-	fmt.Print(w.GetSelectedWord())
+	fmt.Println("Selected word is: " + res)
+	a.GetMeaning(res)
 }

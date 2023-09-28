@@ -1,2 +1,4 @@
-# DICX
-dicx is a simple dictionary tool that gives you meaning of any selected word.
+
+dicx is a simple tool that gives you meaning of any selected word.
+
+It utilizes the xclip tool to get the user selected word from the active window and uses the dictionary api to get the meaning and displays it. 
