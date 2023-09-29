@@ -2,6 +2,7 @@ package main
 
 import (
 	a "dicx/api"
+	n "dicx/notify"
 	w "dicx/word"
 	"fmt"
 )
@@ -17,5 +18,7 @@ func main() {
 		fmt.Println("some error occured: " + res)
 	}
 	fmt.Println("Selected word is: " + res)
-	a.GetMeaning(res)
+	if a.GetMeaning(res) == 1 {
+		n.SendNotification(a.Result)
+	}
 }

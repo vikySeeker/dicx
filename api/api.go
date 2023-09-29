@@ -1,43 +1,71 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
-	"os"
-
-	"github.com/joho/godotenv"
+	"strconv"
 )
 
-var THESAPI = "https://www.dictionaryapi.com/api/v3/references/thesaurus/json/"
-var DICTAPI = "https://www.dictionaryapi.com/api/v3/references/thesaurus/json/"
+type apiSuccessData []struct {
+	Word      string `json:"word"`
+	Phonetic  string `json:"phonetic"`
+	Phonetics []struct {
+		Text  string `json:"text"`
+		Audio string `json:"audio,omitempty"`
+	} `json:"phonetics"`
+	Origin   string `json:"origin"`
+	Meanings []struct {
+		PartOfSpeech string `json:"partOfSpeech"`
+		Definitions  []struct {
+			Definition string `json:"definition"`
+			Example    string `json:"example"`
+			Synonyms   []any  `json:"synonyms"`
+			Antonyms   []any  `json:"antonyms"`
+		} `json:"definitions"`
+	} `json:"meanings"`
+}
+
+var DICTAPI = "https://api.dictionaryapi.dev/api/v2/entries/en/"
+var Result [3]string
 
 // prepares the url responsible to fetch the data from api
-func PrepareUrl(word string) {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("some error: %s", err)
-	}
-	key := os.Getenv("THESKEY")
-	THESAPI = THESAPI + word + "?key=" + key
+func prepareUrl(word string) {
+	DICTAPI = DICTAPI + word
 }
 
 // makes http request to the prepared url and extracts the meaning, definition and example
-func GetMeaning(word string) {
-	PrepareUrl(word)
-	//fmt.Println(THESAPI)
-	response, err := http.Get(THESAPI)
+func GetMeaning(word string) int {
+	prepareUrl(word)
+	//fmt.Println(DICTAPI)
+	response, err := http.Get(DICTAPI)
 	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
+		log.Fatal(err)
 	}
+
 	defer response.Body.Close()
+
 	responseData, err := io.ReadAll(response.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
-	data := string(responseData)
-	fmt.Print(data)
 
+	Result[0] = strconv.Itoa(response.StatusCode)
+
+	if response.StatusCode != 200 {
+		Result[1] = response.Status
+		Result[2] = "Some error occured! Please Try again later."
+	} else {
+		var data apiSuccessData
+
+		if err := json.Unmarshal([]byte(responseData), &data); err != nil {
+			fmt.Println("Error parsing JSON:", err)
+			return 0
+		}
+		Result[1] = data[0].Word
+		Result[2] = data[0].Meanings[0].Definitions[0].Definition
+	}
+	return 1
 }
