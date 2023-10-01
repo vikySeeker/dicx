@@ -5,6 +5,7 @@ import (
 	n "dicx/notify"
 	w "dicx/word"
 	"fmt"
+	"strings"
 )
 
 /*
@@ -17,6 +18,9 @@ func main() {
 	if err != 0 {
 		fmt.Println("some error occured: " + res)
 	}
+	res = strings.TrimSpace(res)
+	res = strings.Split(res, " ")[0]
+	res = strings.ReplaceAll(res, ".", "")
 	fmt.Println("Selected word is: " + res)
 	if a.GetMeaning(res) == 1 {
 		n.SendNotification(a.Result)
