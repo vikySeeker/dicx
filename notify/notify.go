@@ -1,22 +1,39 @@
 package notify
 
 import (
-	"log"
+	"fmt"
 	"os/exec"
 )
 
 var urgency string
 
-func SendNotification(message [3]string) {
-	summary := message[1]
-	body := message[2]
+/*
+function that is responsible for sending notification
+*/
+func SendNotification(message [3]string) error {
+	word := message[1]
+	meaning := message[2]
 	urgency = "normal"
 	if message[0] != "200" {
 		urgency = "critical"
 	}
-	cmd := exec.Command("notify-send", "-u", urgency, summary, body)
+	cmd := exec.Command("notify-send", "-u", urgency, word, meaning)
 	err := cmd.Run()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+	return nil
+}
+
+/*
+function that is responsible for printing the output to terminal
+*/
+func PrintOutput(message [3]string) error {
+	word := message[1]
+	meaning := message[2]
+	_, err := fmt.Println("Selected Word is: ", word, "\nMeaning:", meaning)
+	if err != nil {
+		return err
+	}
+	return nil
 }

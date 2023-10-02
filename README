@@ -6,16 +6,12 @@ Working:
 It utilizes the xclip tool to retrieve the selected word from the active window and fetches the meaning of using the free dictionary api (dictionaryapi.dev).
 Finally it presents the output using the notify-send program to send notification.
 
-Usage:
-
-	Users can select any word in thier screen for eg. selecting the word from an article in the web browser, and enters the shortcut sends the meaning or result as notification
-
 Requirements:
 
 The following tools are necessary for the program to work properly
 	-xclip
 	-notify-send
-	-go
+	-go compiler
 
 Installation :
 	
@@ -28,4 +24,8 @@ Before buliding from source make sure you met all the requirements.
 
 Alternatively you can select any word in the window and run the program directly
 
-
+Usage:
+	This program can output results is three modes:
+		1. Terminal Mode - simply outputting to terminal
+		2. notification mode - basically when program is invoked via keyboard shortcut it uses this mode
+		3. Hybrid mode - combining both modes. use this flag -n to force the program send output in both ways.

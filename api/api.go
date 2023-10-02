@@ -2,13 +2,12 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 )
 
+// json data struct
 type apiSuccessData []struct {
 	Word      string `json:"word"`
 	Phonetic  string `json:"phonetic"`
@@ -37,19 +36,18 @@ func prepareUrl(word string) {
 }
 
 // makes http request to the prepared url and extracts the meaning, definition and example
-func GetMeaning(word string) int {
+func GetMeaning(word string) error {
 	prepareUrl(word)
-	//fmt.Println(DICTAPI)
 	response, err := http.Get(DICTAPI)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	defer response.Body.Close()
 
 	responseData, err := io.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	Result[0] = strconv.Itoa(response.StatusCode)
@@ -61,11 +59,10 @@ func GetMeaning(word string) int {
 		var data apiSuccessData
 
 		if err := json.Unmarshal([]byte(responseData), &data); err != nil {
-			fmt.Println("Error parsing JSON:", err)
-			return 0
+			return err
 		}
 		Result[1] = data[0].Word
 		Result[2] = data[0].Meanings[0].Definitions[0].Definition
 	}
-	return 1
+	return nil
 }
