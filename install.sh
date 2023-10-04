@@ -7,7 +7,7 @@ echo "██║░░██║██║██║░░██╗░██╔█�
 echo "██████╔╝██║╚█████╔╝██╔╝╚██╗"
 echo "╚═════╝░╚═╝░╚════╝░╚═╝░░╚═╝"
 
-echo "\n [*] Checking package requirements... \n"
+echo "\n[*] Checking package requirements...\n"
 
 if which xclip >/dev/null 2>&1; then
         echo " xclip is installed"
@@ -33,12 +33,15 @@ else
         echo " golang installed successfully!"
 fi
 
-echo "\n [*] Setting up Dicx... \n"
+echo "\n[*] Setting up Dicx...\n"
 
 go build
 
 sudo mv ./dicx /usr/local/bin
 
-echo "Dicx installed successfully! \n"
+sudo ./icons/dicx.png /usr/share/icons/dicx.png
+sudo ./icons/dicx-failed.png /usr/share/icons/dicx-failed.png 
 
-echo "\n You can now setup your preferred shortcut in your system to call dicx command \n"
+echo "Dicx installed successfully!\n"
+
+echo "\nYou can now setup your preferred shortcut in your system to call dicx command\n"

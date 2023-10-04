@@ -5,7 +5,10 @@ import (
 	"os/exec"
 )
 
-var urgency string
+// options value for the notify-send command to specify urgency and icon
+var urgency string = "normal"
+var success_icon string = "dicx"
+var failure_icon string = "dicx-falied"
 
 /*
 function that is responsible for sending notification
@@ -13,11 +16,12 @@ function that is responsible for sending notification
 func SendNotification(message [3]string) error {
 	word := message[1]
 	meaning := message[2]
-	urgency = "normal"
+	icon := success_icon
 	if message[0] != "200" {
 		urgency = "critical"
+		icon = failure_icon
 	}
-	cmd := exec.Command("notify-send", "-u", urgency, word, meaning)
+	cmd := exec.Command("notify-send", "-i", icon, "-u", urgency, word, meaning)
 	err := cmd.Run()
 	if err != nil {
 		return err
