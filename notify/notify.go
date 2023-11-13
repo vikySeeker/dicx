@@ -8,7 +8,7 @@ import (
 // options value for the notify-send command to specify urgency and icon
 var urgency string = "normal"
 var success_icon string = "dicx"
-var failure_icon string = "dicx-falied"
+var failure_icon string = "dicx-failed"
 
 /*
 function that is responsible for sending notification

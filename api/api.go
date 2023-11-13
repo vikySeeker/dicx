@@ -40,7 +40,9 @@ func GetMeaning(word string) error {
 	prepareUrl(word)
 	response, err := http.Get(DICTAPI)
 	if err != nil {
-		return err
+		Result[1] = "Network Error!"
+		Result[2] = "Please check your internet connection!"
+		return nil
 	}
 
 	defer response.Body.Close()
@@ -52,7 +54,10 @@ func GetMeaning(word string) error {
 
 	Result[0] = strconv.Itoa(response.StatusCode)
 
-	if response.StatusCode != 200 {
+	if response.StatusCode == 404 {
+		Result[1] = "No Result :("
+		Result[2] = "Sorry mate, couldn't find the meaning for the word you specified!"
+	} else if response.StatusCode != 200 {
 		Result[1] = response.Status
 		Result[2] = "Some error occured! Please Try again later."
 	} else {
