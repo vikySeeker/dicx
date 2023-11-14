@@ -28,7 +28,7 @@ type apiSuccessData []struct {
 }
 
 var DICTAPI = "https://api.dictionaryapi.dev/api/v2/entries/en/"
-var Result [3]string
+var Result []string
 
 // prepares the url responsible to fetch the data from api
 func prepareUrl(word string) {
@@ -40,8 +40,7 @@ func GetMeaning(word string) error {
 	prepareUrl(word)
 	response, err := http.Get(DICTAPI)
 	if err != nil {
-		Result[1] = "Network Error!"
-		Result[2] = "Please check your internet connection!"
+		Result = append(Result, "Network Error!", "Please check your internet connection!")
 		return nil
 	}
 
@@ -52,22 +51,28 @@ func GetMeaning(word string) error {
 		return err
 	}
 
-	Result[0] = strconv.Itoa(response.StatusCode)
+	Result = append(Result, strconv.Itoa(response.StatusCode))
 
 	if response.StatusCode == 404 {
-		Result[1] = "No Result :("
-		Result[2] = "Sorry mate, couldn't find the meaning for the word you specified!"
+		Result = append(Result, "No Result :(", "Sorry mate, couldn't find the meaning for the word you specified!")
 	} else if response.StatusCode != 200 {
-		Result[1] = response.Status
-		Result[2] = "Some error occured! Please Try again later."
+		Result = append(Result, response.Status, "Some error occured! Please Try again later.")
 	} else {
 		var data apiSuccessData
 
 		if err := json.Unmarshal([]byte(responseData), &data); err != nil {
 			return err
 		}
-		Result[1] = data[0].Word
-		Result[2] = data[0].Meanings[0].Definitions[0].Definition
+		Result = append(Result, data[0].Word, data[0].Meanings[0].Definitions[0].Definition, data[0].Phonetics[1].Audio)
 	}
 	return nil
+}
+
+func GetAudio() (io.Reader, error) {
+	audio, err := http.Get(string(Result[len(Result)-1]))
+	if err != nil {
+		return nil, err
+	}
+	return audio.Body, nil
+
 }

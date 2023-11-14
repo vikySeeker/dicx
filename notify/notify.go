@@ -1,7 +1,10 @@
 package notify
 
 import (
+	d "dicx/api"
+	a "dicx/audio"
 	"fmt"
+	"log"
 	"os/exec"
 )
 
@@ -13,7 +16,7 @@ var failure_icon string = "dicx-failed"
 /*
 function that is responsible for sending notification
 */
-func SendNotification(message [3]string) error {
+func SendNotification(message []string) {
 	word := message[1]
 	meaning := message[2]
 	icon := success_icon
@@ -21,23 +24,31 @@ func SendNotification(message [3]string) error {
 		urgency = "critical"
 		icon = failure_icon
 	}
-	cmd := exec.Command("notify-send", "-i", icon, "-u", urgency, word, meaning)
-	err := cmd.Run()
+	cmd := exec.Command("notify-send", "-i", icon, "-u", urgency, "-A", "p=Spell", word, meaning)
+	output, err := cmd.Output()
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
-	return nil
+	if string(output[0]) == "p" {
+		data, err := d.GetAudio()
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = a.PronounceWord(data)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 }
 
 /*
 function that is responsible for printing the output to terminal
 */
-func PrintOutput(message [3]string) error {
+func PrintOutput(message []string) {
 	word := message[1]
 	meaning := message[2]
 	_, err := fmt.Println("Selected Word is: ", word, "\nMeaning:", meaning)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
-	return nil
 }

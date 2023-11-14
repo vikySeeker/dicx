@@ -88,24 +88,11 @@ func main() {
 	}
 
 	if !isInTerminalMode() {
-		err = n.SendNotification(a.Result)
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else if include_notification {
-		err = n.SendNotification(a.Result)
-		if err != nil {
-			log.Fatal(err)
-		}
-		err = n.PrintOutput(a.Result)
-		if err != nil {
-			log.Fatal(err)
-		}
-
+		n.SendNotification(a.Result)
 	} else {
-		err = n.PrintOutput(a.Result)
-		if err != nil {
-			log.Fatal(err)
+		n.PrintOutput(a.Result)
+		if include_notification {
+			n.SendNotification(a.Result)
 		}
 	}
 }
