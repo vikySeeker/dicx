@@ -1,5 +1,4 @@
-
-dicx is a simple tool that gives you meaning of any selected word.
+dicx is a simple tool that gives you meaning of any selected word and pronounce the word if possible.
 
 Working:
 	
@@ -28,4 +27,4 @@ Usage:
 	This program can output results is three modes:
 		1. Terminal Mode - simply outputting to terminal
 		2. notification mode - basically when program is invoked via keyboard shortcut it uses this mode
-		3. Hybrid mode - combining both modes. use this flag -n to force the program send output in both ways.
+		3. Hybrid mode - combining both modes. use this flag -n to force the program send output in both ways only in terminal mode.

@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"strconv"
@@ -63,16 +64,34 @@ func GetMeaning(word string) error {
 		if err := json.Unmarshal([]byte(responseData), &data); err != nil {
 			return err
 		}
-		Result = append(Result, data[0].Word, data[0].Meanings[0].Definitions[0].Definition, data[0].Phonetics[1].Audio)
+
+		url := audioURL(&data)
+		if url != "" {
+			Result = append(Result, data[0].Word, data[0].Meanings[0].Definitions[0].Definition, url)
+		} else {
+			Result = append(Result, data[0].Word, data[0].Meanings[0].Definitions[0].Definition, "nil")
+		}
 	}
 	return nil
 }
 
-func GetAudio() (io.Reader, error) {
-	audio, err := http.Get(string(Result[len(Result)-1]))
-	if err != nil {
-		return nil, err
+func audioURL(meaning *apiSuccessData) string {
+	for _, data := range (*meaning)[0].Phonetics {
+		if data.Audio != "" {
+			return data.Audio
+		}
 	}
-	return audio.Body, nil
+	return ""
+}
 
+func GetAudio() (io.Reader, error) {
+	url := Result[len(Result)-1]
+	if url != "nil" {
+		audio, err := http.Get(string(Result[len(Result)-1]))
+		if err != nil {
+			return nil, err
+		}
+		return audio.Body, nil
+	}
+	return nil, errors.New("no audio source found")
 }
