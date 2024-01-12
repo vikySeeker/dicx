@@ -49,6 +49,10 @@ to define whether need to include notification in terminal mode
 and whether word is give in the command line argument
 */
 func setupArguments() {
+	if len(os.Args) < 2 {
+		help_flag = true
+		return
+	}
 	for _, args := range os.Args[1:] {
 		if strings.Contains(args, "-h") {
 			help_flag = true
@@ -87,12 +91,9 @@ func main() {
 		}
 	}
 
-	if !isInTerminalMode() {
+	if !isInTerminalMode() || include_notification {
 		n.SendNotification(a.Result)
 	} else {
 		n.PrintOutput(a.Result)
-		if include_notification {
-			n.SendNotification(a.Result)
-		}
 	}
 }
