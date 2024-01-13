@@ -1,8 +1,8 @@
 package notify
 
 import (
-	d "dicx/api"
-	a "dicx/audio"
+	d "github.com/vikySeeker/dicx/api"
+	a "github.com/vikySeeker/dicx/audio"
 	"fmt"
 	"log"
 	"os/exec"

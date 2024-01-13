@@ -1,9 +1,9 @@
 package main
 
 import (
-	a "dicx/api"
-	n "dicx/notify"
-	w "dicx/word"
+	a "github.com/vikySeeker/dicx/api"
+	n "github.com/vikySeeker/dicx/notify"
+	w "github.com/vikySeeker/dicx/word"
 	"fmt"
 	"log"
 	"os"
