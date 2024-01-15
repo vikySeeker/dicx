@@ -13,7 +13,7 @@ func GetSelectedWord() (string, error) {
 	cmd.Stdout = &out
 	err := cmd.Run()
 	if err != nil {
-		return "Error occured", err
+		return "Error occurred", err
 	}
 	res := out.String()
 	res = strings.TrimSpace(res)

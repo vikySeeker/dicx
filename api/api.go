@@ -57,7 +57,7 @@ func GetMeaning(word string) error {
 	if response.StatusCode == 404 {
 		Result = append(Result, "No Result :(", "Sorry mate, couldn't find the meaning for the word you specified!")
 	} else if response.StatusCode != 200 {
-		Result = append(Result, response.Status, "Some error occured! Please Try again later.")
+		Result = append(Result, response.Status, "Some error occurred! Please Try again later.")
 	} else {
 		var data apiSuccessData
 
