@@ -31,3 +31,6 @@ This program can output results in three modes:
 1. **Terminal Mode:** Simply outputs to the terminal.
 2. **Notification Mode:** When the program is invoked via a keyboard shortcut, it uses this mode.
 3. **Hybrid Mode:** Combining both modes. Use the `-n` flag to force the program to send output in both ways, but only in terminal mode.
+
+## Torubleshooting
+If the **go install** spits an error stating that alsa.pc path is missing or anything regarding **alsa**, try isntalling libasound2-dev library and try again.
