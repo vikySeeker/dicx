@@ -11,6 +11,7 @@ require (
 )
 
 require (
+	git.sr.ht/~neftas/go-notify v0.6.1 // indirect
 	github.com/codegoalie/golibnotify v0.2.0 // indirect
 	golang.org/x/exp v0.0.0-20190306152737-a1d7652674e8 // indirect
 	golang.org/x/image v0.0.0-20190227222117-0694c2d4d067 // indirect
