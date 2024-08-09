@@ -9,8 +9,8 @@ import (
 )
 
 // fetches audio for pronunciation
-func PronounceWord(f io.Reader) error {
-	d, err := mp3.NewDecoder(f)
+func PronounceWord(f *io.Reader) error {
+	d, err := mp3.NewDecoder(*f)
 	if err != nil {
 		return err
 	}

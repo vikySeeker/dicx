@@ -3,36 +3,99 @@ package notify
 import (
 	"fmt"
 	"log"
-	//"os/exec"
 	"time"
+	"io"
 	
 	d "github.com/vikySeeker/dicx/api"
-	//a "github.com/vikySeeker/dicx/audio"
-
-	gn "github.com/codegoalie/golibnotify"
+	gn "git.sr.ht/~neftas/go-notify"
+	a "github.com/vikySeeker/dicx/audio"
 )
 
-// options value for the notify-send command to specify urgency and icon
-var urgency string = "normal"
-var success_icon string = "dicx"
-var failure_icon string = "dicx-failed"
-var Audio_source bool = true
+// options value for the libnotify notification to specify urgency and icon.
+var is_critical bool = false
+var success_icon string = "/home/seeker/projects/personal/dicx/icons/dicx.png"
+var failure_icon string = "/home/seeker/projects/personal/dicx/icons/dicx-failed.png"
+var audio_source bool = true
+var notified bool = false
 
-func notifyUser(title string, message string, icon_path string) {
-	notifier := gn.NewSimpleNotifier("Dicx Libnotify")
-	err := notifier.Show(title, message, icon_path)
+/* 
+function that is responsible for generating notification using libnotify.
+*/
+func notifyUser(title string, message string, icon_path string, audiodata *io.Reader) {
 
+	//Attaching loggers to trace the notification flow...
+	//gn.SetDebugLogger(log.Println)
+	//gn.SetErrorLogger(log.Println)
+
+	notifier, err:= gn.NewNotifier("Dicx!")
 	if err != nil {
-		err = fmt.Errorf("Failed to send Notification: %w", err)
-		log.Fatal(err)
+		log.Printf("Notifier: %v\n", err)
+	}
+	notification, err := notifier.NewNotification(title, message, icon_path)
+	if err != nil {
+		log.Printf("Notification: %v\n", err)
 	}
 
-	time.Sleep(5*time.Second)
+	if is_critical {
+		err = notification.SetUrgency(gn.Critical)
+	} else { 
+		err = notification.SetUrgency(gn.Normal)
+	}
 
-	err = notifier.Close()
 	if err != nil {
-		err = fmt.Errorf("Failed to safely close the notification: %w", err)
-                log.Fatal(err)
+		log.Printf("Urgency: %v\n", err)
+	}
+	
+	playAudioHandler := func() {
+		err := a.PronounceWord(audiodata)
+		if err != nil {
+			log.Printf("Playing Audio: %v\n", err)
+		}
+		notified = true
+	}
+
+	closeNotificationHandler := func() {
+		notified = true
+		err := notification.Close()
+		if err != nil {
+			err = fmt.Errorf("Failed to safely close the notification: %w", err)
+	                log.Fatal(err)
+		}
+		fmt.Println("Notification Close Successfully!!\n")
+	}
+
+	if audio_source && audiodata != nil {
+		err = notification.SetTimeout(gn.InfinityTimeout)
+		if err != nil {
+			log.Printf("Timeout: %v\n", err)
+		}
+		if err = notification.AddAction("1", "Audio", playAudioHandler); err != nil {
+			log.Printf("Add Action: %v\n", err)
+		}
+		if err = notification.AddAction("2", "Close", closeNotificationHandler); err != nil {
+			log.Printf("Add Action: %v\n", err)
+		}
+	} else {
+		err = notification.SetTimeout(gn.DefaultTimeout)
+		if err != nil {
+			log.Printf("Timeout: %v\n", err)
+		}
+	}
+	
+	err = notification.Show()
+	if err != nil {
+		log.Println("Show: %v", err)
+	}
+	
+	timer := 0
+	for audio_source && !notified {
+		if timer == 10 {
+			notification.Close()
+			break
+		}
+		time.Sleep(1 * time.Second)
+		timer += 1
+		continue
 	}
 }
 
@@ -44,33 +107,18 @@ func SendNotification(message []string) {
 	meaning := message[2]
 	icon := success_icon
 	if message[0] != "200" {
-		urgency = "critical"
+		is_critical = true
 		icon = failure_icon
 	}
 
-	//cmd := exec.Command("notify-send", "-i", icon, "-u", urgency, "-A", "p=Read A Loud", word, meaning)
-	_, err := d.GetAudio()
+	audiodata, err := d.GetAudio()
 	if err != nil {
-		//cmd = exec.Command("notify-send", "-i", icon, "-u", urgency, word, meaning)
-		Audio_source = false
-	}
+		audio_source = false
+		notifyUser(word, meaning, icon, nil)
 
-	notifyUser(word, meaning, icon)
-	/*
-	output, err := cmd.Output()
-	if err != nil {
-		log.Fatal(err)
+	} else {
+		notifyUser(word, meaning, icon, &audiodata)
 	}
-
-	if len(output) > 0 && Audio_source {
-		if string(output[0]) == "p" {
-			err = a.PronounceWord(data)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
-	}
-	*/
 }
 
 /*

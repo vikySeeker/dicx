@@ -41,7 +41,7 @@ func GetMeaning(word string) error {
 	prepareUrl(word)
 	response, err := http.Get(DICTAPI)
 	if err != nil {
-		Result = append(Result, "Network Error!", "Please check your internet connection!")
+		Result = append(Result, "69", "Network Error!", "Please check your internet connection!\nStatus: 69")
 		return nil
 	}
 

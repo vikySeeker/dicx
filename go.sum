@@ -1,3 +1,5 @@
+git.sr.ht/~neftas/go-notify v0.6.1 h1:s5iRx+s6fHXDN9c7RdgREvLwFcyPzTodj7PS7yutrYo=
+git.sr.ht/~neftas/go-notify v0.6.1/go.mod h1:gdvnqtKflNFyzqU3jR7z5bpGqFry3pHyv3vbGIxJIbg=
 github.com/codegoalie/golibnotify v0.2.0 h1:435rE/re8zZCbMAMATPZ3Ggv0W1MndVcTaq6f2P8Fl0=
 github.com/codegoalie/golibnotify v0.2.0/go.mod h1:+v6J4ss13rISdS08ENaHtBlxYOyIAPXVEUM4KyRYpoY=
 github.com/gotk3/gotk3 v0.6.2 h1:sx/PjaKfKULJPTPq8p2kn2ZbcNFxpOJqi4VLzMbEOO8=
