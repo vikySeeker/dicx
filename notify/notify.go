@@ -4,72 +4,99 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"io"
 	
 	d "github.com/vikySeeker/dicx/api"
 	gn "git.sr.ht/~neftas/go-notify"
-	//a "github.com/vikySeeker/dicx/audio"
-	//gn "github.com/codegoalie/golibnotify"
+	a "github.com/vikySeeker/dicx/audio"
 )
 
-// options value for the notify-send command to specify urgency and icon
-var urgency string = "normal"
-var success_icon string = "dicx"
-var failure_icon string = "dicx-failed"
-var Audio_source bool = true
+// options value for the libnotify notification to specify urgency and icon.
+var is_critical bool = false
+var success_icon string = "/home/seeker/projects/personal/dicx/icons/dicx.png"
+var failure_icon string = "/home/seeker/projects/personal/dicx/icons/dicx-failed.png"
+var audio_source bool = true
+var notified bool = false
 
-func handlePlayAudio() {
-	
-}
-
-func notifyUser(title string, message string, icon_path string) {
+/* 
+function that is responsible for generating notification using libnotify.
+*/
+func notifyUser(title string, message string, icon_path string, audiodata *io.Reader) {
 
 	//Attaching loggers to trace the notification flow...
-	gn.SetDebugLogger(log.Println)
-	gn.SetErrorLogger(log.Println)
+	//gn.SetDebugLogger(log.Println)
+	//gn.SetErrorLogger(log.Println)
 
-	notifier, err:= gn.NewNotifier("Dicx go-notify")
+	notifier, err:= gn.NewNotifier("Dicx!")
 	if err != nil {
-		log.Println("Notifier: %v", err)
+		log.Printf("Notifier: %v\n", err)
 	}
 	notification, err := notifier.NewNotification(title, message, icon_path)
 	if err != nil {
-		log.Println("Notification: %v", err)
+		log.Printf("Notification: %v\n", err)
 	}
 
-	err = notification.SetUrgency(gn.Normal)
+	if is_critical {
+		err = notification.SetUrgency(gn.Critical)
+	} else { 
+		err = notification.SetUrgency(gn.Normal)
+	}
+
 	if err != nil {
-		log.Println("Urgency: %v", err)
+		log.Printf("Urgency: %v\n", err)
 	}
 	
-	err = notification.SetTimeout(gn.DefaultTimeout)
-	if err != nil {
-		log.Println("Timeout: %v", err)
+	playAudioHandler := func() {
+		err := a.PronounceWord(audiodata)
+		if err != nil {
+			log.Printf("Playing Audio: %v\n", err)
+		}
+		notified = true
 	}
 
-	cb:= func() {
-		fmt.Println("Button Clicked!")
-	}
-	if err = notification.AddAction("1", "Select", cb); err != nil {
-		log.Println("Add Action: %v", err)
+	closeNotificationHandler := func() {
+		notified = true
+		err := notification.Close()
+		if err != nil {
+			err = fmt.Errorf("Failed to safely close the notification: %w", err)
+	                log.Fatal(err)
+		}
+		fmt.Println("Notification Close Successfully!!\n")
 	}
 
+	if audio_source && audiodata != nil {
+		err = notification.SetTimeout(gn.InfinityTimeout)
+		if err != nil {
+			log.Printf("Timeout: %v\n", err)
+		}
+		if err = notification.AddAction("1", "Audio", playAudioHandler); err != nil {
+			log.Printf("Add Action: %v\n", err)
+		}
+		if err = notification.AddAction("2", "Close", closeNotificationHandler); err != nil {
+			log.Printf("Add Action: %v\n", err)
+		}
+	} else {
+		err = notification.SetTimeout(gn.DefaultTimeout)
+		if err != nil {
+			log.Printf("Timeout: %v\n", err)
+		}
+	}
+	
 	err = notification.Show()
 	if err != nil {
 		log.Println("Show: %v", err)
 	}
-
-	/*if err != nil {
-		err = fmt.Errorf("Failed to send Notification: %w", err)
-		log.Fatal(err)
-	}*/
-
-	time.Sleep(3*time.Second)
-
-	notification.Close()
-	/*if err != nil {
-		err = fmt.Errorf("Failed to safely close the notification: %w", err)
-                log.Fatal(err)
-	}*/
+	
+	timer := 0
+	for audio_source && !notified {
+		if timer == 10 {
+			notification.Close()
+			break
+		}
+		time.Sleep(1 * time.Second)
+		timer += 1
+		continue
+	}
 }
 
 /*
@@ -80,33 +107,18 @@ func SendNotification(message []string) {
 	meaning := message[2]
 	icon := success_icon
 	if message[0] != "200" {
-		urgency = "critical"
+		is_critical = true
 		icon = failure_icon
 	}
 
-	//cmd := exec.Command("notify-send", "-i", icon, "-u", urgency, "-A", "p=Read A Loud", word, meaning)
-	_, err := d.GetAudio()
+	audiodata, err := d.GetAudio()
 	if err != nil {
-		//cmd = exec.Command("notify-send", "-i", icon, "-u", urgency, word, meaning)
-		Audio_source = false
-	}
+		audio_source = false
+		notifyUser(word, meaning, icon, nil)
 
-	notifyUser(word, meaning, icon)
-	/*
-	output, err := cmd.Output()
-	if err != nil {
-		log.Fatal(err)
+	} else {
+		notifyUser(word, meaning, icon, &audiodata)
 	}
-
-	if len(output) > 0 && Audio_source {
-		if string(output[0]) == "p" {
-			err = a.PronounceWord(data)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
-	}
-	*/
 }
 
 /*
