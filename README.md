@@ -10,8 +10,8 @@ Finally, it presents the output using the notify-send program to send notificati
 ## Requirements 🛠️📋
 
 The following tools are necessary for the program to work properly:
+- libnotify
 - xclip
-- notify-send
 - go compiler
 
 ## Installation 🚀
