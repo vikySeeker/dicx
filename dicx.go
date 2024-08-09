@@ -1,13 +1,14 @@
 package main
 
 import (
-	a "github.com/vikySeeker/dicx/api"
-	n "github.com/vikySeeker/dicx/notify"
-	w "github.com/vikySeeker/dicx/word"
 	"fmt"
 	"log"
 	"os"
 	"strings"
+
+	a "github.com/vikySeeker/dicx/api"
+	n "github.com/vikySeeker/dicx/notify"
+	w "github.com/vikySeeker/dicx/word"
 )
 
 // variables that is used in common and used to indicate command line arguments
@@ -24,7 +25,7 @@ func printHelp() {
 	fmt.Println("Usage: dicx [options] <word>")
 	fmt.Println()
 	fmt.Println("Options:")
-	fmt.Println("\t -h\t\t displays help section")
+	fmt.Println("\t -h | --help\t displays help section")
 	fmt.Println("\t -n\t\t force send notification in terminal mode")
 	fmt.Println()
 	fmt.Println("Working:")
@@ -54,12 +55,12 @@ func setupArguments() {
 		return
 	}
 	for _, args := range os.Args[1:] {
-		if strings.Contains(args, "-h") {
+		if strings.Compare(args, "-h") == 0 || strings.Compare(args, "--help") == 0 {
 			help_flag = true
 			break
 		}
 
-		if strings.Contains(args, "-n") {
+		if strings.Compare(args, "-n") == 0 {
 			include_notification = true
 			continue
 		}
