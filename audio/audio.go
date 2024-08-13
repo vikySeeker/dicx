@@ -23,8 +23,6 @@ func PronounceWord(f *io.Reader) error {
 	p := c.NewPlayer()
 	defer p.Close()
 
-	fmt.Printf("Length: %d[bytes]\n", d.Length())
-
 	if _, err := io.Copy(p, d); err != nil {
 		return err
 	}

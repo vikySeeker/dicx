@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"encoding/json"
 	"errors"
 	"io"
