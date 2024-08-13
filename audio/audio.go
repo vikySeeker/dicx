@@ -1,7 +1,6 @@
 package audio
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/hajimehoshi/go-mp3"

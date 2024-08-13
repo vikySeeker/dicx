@@ -102,10 +102,12 @@ func notifyUser(title string, message string, icon_path string, audiodata *io.Re
 /*
 function that is responsible for sending notification
 */
-func SendNotification(message []string) {
-	word := message[1]
+func SendNotification(message_ptr *[]string) {
+	message := *message_ptr
+ 	word := message[1]
 	meaning := message[2]
 	icon := success_icon
+	
 	if message[0] != "200" {
 		is_critical = true
 		icon = failure_icon
@@ -118,7 +120,7 @@ func SendNotification(message []string) {
 
 	} else {
 		notifyUser(word, meaning, icon, &audiodata)
-	}
+	} 
 }
 
 /*

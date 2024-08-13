@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"encoding/json"
 	"errors"
 	"io"
@@ -31,14 +32,9 @@ type apiSuccessData []struct {
 var DICTAPI = "https://api.dictionaryapi.dev/api/v2/entries/en/"
 var Result []string
 
-// prepares the url responsible to fetch the data from api
-func prepareUrl(word string) {
-	DICTAPI = DICTAPI + word
-}
-
 // makes http request to the prepared url and extracts the meaning, definition and example
 func GetMeaning(word string) error {
-	prepareUrl(word)
+	DICTAPI = DICTAPI + word
 	response, err := http.Get(DICTAPI)
 	if err != nil {
 		Result = append(Result, "69", "Network Error!", "Please check your internet connection!\nStatus: 69")

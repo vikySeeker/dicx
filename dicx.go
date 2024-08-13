@@ -77,23 +77,20 @@ func main() {
 		printHelp()
 		os.Exit(0)
 	}
+
 	if word == "" {
 		word, err = w.GetSelectedWord()
 		if err != nil {
 			log.Fatal(err)
 		}
-		if err = a.GetMeaning(word); err != nil {
-			log.Fatal(err)
-		}
+	}
 
-	} else {
-		if err = a.GetMeaning(word); err != nil {
-			log.Fatal(err)
-		}
+	if err = a.GetMeaning(word); err != nil {
+		log.Fatal(err)
 	}
 
 	if !isInTerminalMode() || include_notification {
-		n.SendNotification(a.Result)
+		n.SendNotification(&a.Result)
 	} else {
 		n.PrintOutput(a.Result)
 	}
